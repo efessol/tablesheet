@@ -35,10 +35,23 @@ class TableLayoutEditor {
             this.setupEventListeners();
             this.render();
             this.updateStats();
+            
+            // Show mobile tips if on mobile device
+            if (this.isMobileDevice()) {
+                setTimeout(() => {
+                    this.showToast('📱 Mobil İpuçları: • İki parmakla yakınlaştırın • Çift dokunarak düzenleyin • Uzun basarak seçin', 'info', 5000);
+                }, 2000);
+            }
         } catch (error) {
             console.error('Uygulama başlatılamadı:', error);
             this.showToast('Veriler yüklenirken hata oluştu', 'error');
         }
+    }
+
+    isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               'ontouchstart' in window ||
+               navigator.maxTouchPoints > 0;
     }
 
     async loadData() {
@@ -132,15 +145,28 @@ class TableLayoutEditor {
             btn.addEventListener('click', (e) => this.handleToolClick(e));
         });
 
-        // Canvas events
+        // Canvas events - Mouse
         this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
         this.canvas.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
         this.canvas.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
         
+        // Touch events for mobile
+        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+        
         // Mouse wheel zoom
         this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+        
+        // Touch variables for mobile
+        this.lastTouchDistance = 0;
+        this.touches = [];
+        this.isMultiTouch = false;
+        this.lastTapTime = 0;
+        this.lastTapPos = null;
+        this.tapTimeout = null;
 
         // Color presets
         document.querySelectorAll('.color-preset').forEach(preset => {
@@ -254,6 +280,170 @@ class TableLayoutEditor {
             x: (e.clientX - this.canvasRect.left) / this.scale,
             y: (e.clientY - this.canvasRect.top) / this.scale
         };
+    }
+
+    getTouchPos(touch) {
+        this.canvasRect = this.canvas.getBoundingClientRect();
+        return {
+            x: (touch.clientX - this.canvasRect.left) / this.scale,
+            y: (touch.clientY - this.canvasRect.top) / this.scale
+        };
+    }
+
+    getTouchDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    handleTouchStart(e) {
+        e.preventDefault();
+        this.touches = Array.from(e.touches);
+        
+        if (this.touches.length === 1) {
+            const pos = this.getTouchPos(this.touches[0]);
+            const currentTime = Date.now();
+            this.isMultiTouch = false;
+            
+            // Check for double tap
+            if (this.lastTapTime && currentTime - this.lastTapTime < 500 && this.lastTapPos) {
+                const distance = Math.sqrt(
+                    Math.pow(pos.x - this.lastTapPos.x, 2) + 
+                    Math.pow(pos.y - this.lastTapPos.y, 2)
+                );
+                
+                if (distance < 50) { // Double tap detected
+                    this.handleDoubleTap(pos);
+                    this.lastTapTime = 0;
+                    this.lastTapPos = null;
+                    return;
+                }
+            }
+            
+            this.lastTapTime = currentTime;
+            this.lastTapPos = pos;
+            
+            // Set up long press detection
+            this.tapTimeout = setTimeout(() => {
+                this.handleLongPress(pos);
+            }, 800); // 800ms for long press
+            
+            // Single touch - treat like mouse down
+            this.handleMouseDown({ clientX: this.touches[0].clientX, clientY: this.touches[0].clientY });
+        } else if (this.touches.length === 2) {
+            // Multi-touch for zoom
+            this.isMultiTouch = true;
+            this.lastTouchDistance = this.getTouchDistance(this.touches[0], this.touches[1]);
+            
+            // Clear any drag operations and tap detection
+            this.dragItem = null;
+            this.resizeHandle = null;
+            if (this.tapTimeout) {
+                clearTimeout(this.tapTimeout);
+                this.tapTimeout = null;
+            }
+        }
+    }
+
+    handleTouchMove(e) {
+        e.preventDefault();
+        this.touches = Array.from(e.touches);
+        
+        // Cancel long press if touch moves too much
+        if (this.tapTimeout && this.touches.length === 1) {
+            const pos = this.getTouchPos(this.touches[0]);
+            if (this.lastTapPos) {
+                const distance = Math.sqrt(
+                    Math.pow(pos.x - this.lastTapPos.x, 2) + 
+                    Math.pow(pos.y - this.lastTapPos.y, 2)
+                );
+                
+                if (distance > 20) { // Movement threshold
+                    clearTimeout(this.tapTimeout);
+                    this.tapTimeout = null;
+                }
+            }
+        }
+        
+        if (this.touches.length === 1 && !this.isMultiTouch) {
+            // Single touch - treat like mouse move
+            this.handleMouseMove({ clientX: this.touches[0].clientX, clientY: this.touches[0].clientY });
+        } else if (this.touches.length === 2) {
+            // Two finger pinch zoom
+            const newDistance = this.getTouchDistance(this.touches[0], this.touches[1]);
+            const scaleFactor = newDistance / this.lastTouchDistance;
+            
+            if (Math.abs(scaleFactor - 1) > 0.02) { // Threshold to avoid jitter
+                const newScale = Math.max(this.minScale, Math.min(this.maxScale, this.scale * scaleFactor));
+                if (newScale !== this.scale) {
+                    this.scale = newScale;
+                    this.updateCanvasDisplay();
+                    this.updateZoomIndicator();
+                }
+                this.lastTouchDistance = newDistance;
+            }
+        }
+    }
+
+    handleTouchEnd(e) {
+        e.preventDefault();
+        this.touches = Array.from(e.touches);
+        
+        // Clear long press timeout
+        if (this.tapTimeout) {
+            clearTimeout(this.tapTimeout);
+            this.tapTimeout = null;
+        }
+        
+        if (this.touches.length === 0) {
+            // All touches ended
+            this.isMultiTouch = false;
+            this.handleMouseUp(e);
+        } else if (this.touches.length === 1 && this.isMultiTouch) {
+            // Went from multi-touch to single touch
+            this.isMultiTouch = false;
+        }
+    }
+
+    handleDoubleTap(pos) {
+        if (!this.isEditMode) return;
+        
+        const item = this.getItemAt(pos.x, pos.y);
+        if (item) {
+            this.selectedItem = item;
+            this.openPropertiesModal();
+            this.showToast('✨ Düzenleme modu açıldı', 'info', 2000);
+        }
+    }
+
+    handleLongPress(pos) {
+        if (!this.isEditMode) return;
+        
+        const item = this.getItemAt(pos.x, pos.y);
+        if (item) {
+            this.selectedItem = item;
+            this.render();
+            
+            // Show mobile-friendly editing options
+            this.showMobileEditOptions();
+            this.showToast('📱 Uzun basarak seçtiniz - Düzenle butonuna dokunun', 'info', 3000);
+        }
+    }
+
+    showMobileEditOptions() {
+        if (!this.selectedItem) return;
+        
+        // Focus on selected info panel and make it more prominent
+        const selectedInfoPanel = document.getElementById('selectedInfo');
+        if (selectedInfoPanel) {
+            selectedInfoPanel.style.display = 'block';
+            selectedInfoPanel.classList.add('mobile-highlight');
+            
+            // Remove highlight after animation
+            setTimeout(() => {
+                selectedInfoPanel.classList.remove('mobile-highlight');
+            }, 2000);
+        }
     }
 
     handleMouseDown(e) {
@@ -892,6 +1082,44 @@ class TableLayoutEditor {
         this.ctx.beginPath();
         this.ctx.arc(table.x + size / 3, table.y - size / 3, 8, 0, Math.PI * 2);
         this.ctx.fill();
+        
+        // Selection highlight - more prominent for mobile
+        if (this.selectedItem === table) {
+            this.ctx.strokeStyle = '#4f46e5';
+            this.ctx.lineWidth = this.isMobileDevice() ? 6 : 4; // Thicker on mobile
+            this.ctx.setLineDash([8, 4]); // Longer dashes for mobile visibility
+            
+            // Add glow effect for mobile
+            if (this.isMobileDevice()) {
+                this.ctx.shadowColor = '#4f46e5';
+                this.ctx.shadowBlur = 15;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+            }
+            
+            const highlightOffset = this.isMobileDevice() ? 10 : 8;
+            
+            if (table.shape === 'round') {
+                this.ctx.beginPath();
+                this.ctx.arc(table.x, table.y, size / 2 + highlightOffset, 0, Math.PI * 2);
+                this.ctx.stroke();
+            } else {
+                const x = table.x - size / 2 - highlightOffset;
+                const y = table.y - size / 2 - highlightOffset;
+                if (table.shape === 'square') {
+                    this.ctx.strokeRect(x, y, size + (highlightOffset * 2), size + (highlightOffset * 2));
+                } else { // rectangle
+                    this.ctx.strokeRect(x, y, size * 1.4 + (highlightOffset * 2), size * 0.8 + (highlightOffset * 2));
+                }
+            }
+            
+            // Reset shadow and line dash
+            this.ctx.shadowColor = 'transparent';
+            this.ctx.shadowBlur = 0;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+            this.ctx.setLineDash([]);
+        }
     }
 
     highlightItem(item) {
@@ -1169,10 +1397,16 @@ class TableLayoutEditor {
         input.click();
     }
 
-    showToast(message, type = 'success') {
+    showToast(message, type = 'success', duration = 3000) {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${message}`;
+        
+        let icon = 'check';
+        if (type === 'error') icon = 'exclamation';
+        else if (type === 'warning') icon = 'exclamation-triangle';
+        else if (type === 'info') icon = 'info';
+        
+        toast.innerHTML = `<i class="fas fa-${icon}-circle"></i> ${message}`;
         
         document.body.appendChild(toast);
         
@@ -1180,7 +1414,7 @@ class TableLayoutEditor {
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => document.body.removeChild(toast), 300);
-        }, 3000);
+        }, duration);
     }
 
     autoArrangeTables() {

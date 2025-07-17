@@ -10,6 +10,10 @@ body {
     background: #f0f2f5;
     color: #333;
     overflow-x: hidden;
+    touch-action: manipulation; /* Optimize touch response */
+    -webkit-touch-callout: none; /* Disable callout */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+    overscroll-behavior: none; /* Prevent pull-to-refresh */
 }
 
 .app {
@@ -174,6 +178,11 @@ body {
         radial-gradient(circle, #e2e8f0 1px, transparent 1px);
     background-size: 20px 20px;
     display: block;
+    touch-action: none; /* Prevent default touch behaviors */
+    user-select: none; /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #tableCanvas.dragging {
@@ -627,6 +636,46 @@ body {
         padding: 0.4rem 0.8rem; /* Reduced from 0.75rem */
     }
     
+    /* Touch-friendly tool buttons for mobile */
+    .tool-btn {
+        padding: 0.8rem 1rem; /* Larger touch targets */
+        font-size: 0.9rem;
+        min-height: 44px; /* iOS recommended touch target size */
+        min-width: 44px;
+    }
+    
+    /* Mode buttons for mobile */
+    .mode-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        min-height: 44px;
+    }
+    
+    /* Mobile-friendly selected info panel */
+    .selected-info {
+        position: fixed !important;
+        bottom: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        z-index: 200 !important;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        background: #fff !important;
+        border: 2px solid #4f46e5;
+        max-width: none !important;
+    }
+    
+    .selected-info .btn-small {
+        padding: 0.8rem 1rem; /* Larger touch targets */
+        font-size: 0.9rem;
+        min-height: 44px;
+        min-width: 80px;
+    }
+    
+    .info-actions {
+        gap: 1rem; /* More space between buttons */
+    }
+    
     .tool-group {
         flex-direction: row;
         align-items: center;
@@ -673,11 +722,102 @@ body {
     .tool-group {
         justify-content: flex-start;
         flex-wrap: wrap;
+        gap: 0.6rem;
     }
     
+    /* Even larger touch targets for small screens */
     .tool-btn {
-        padding: 0.4rem 0.6rem; /* Reduced from 0.5rem 0.75rem */
-        font-size: 0.75rem; /* Reduced from 0.8rem */
+        padding: 0.9rem 1.1rem; /* Even larger for small screens */
+        font-size: 0.85rem;
+        min-height: 48px; /* Bigger touch targets */
+        min-width: 48px;
+        border-radius: 12px;
+    }
+    
+    /* Large zoom control buttons for mobile */
+    .tool-btn[data-action="zoom-in"],
+    .tool-btn[data-action="zoom-out"],
+    .tool-btn[data-action="zoom-reset"] {
+        font-size: 1.1rem;
+        min-height: 52px;
+        min-width: 52px;
+        font-weight: bold;
+    }
+    
+    /* Extra large edit buttons for small mobile screens */
+    .selected-info .btn-small {
+        padding: 1rem 1.2rem !important; /* Even bigger for small screens */
+        font-size: 1rem !important;
+        min-height: 48px !important;
+        min-width: 90px !important;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+    
+    /* Mobile-friendly context menu */
+    .context-menu .menu-item {
+        padding: 1rem 1.5rem !important;
+        font-size: 1rem !important;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .context-menu {
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    .selected-info .info-actions {
+        gap: 1.2rem !important;
+        margin-top: 1rem;
+    }
+    
+    /* Make the edit modal more mobile-friendly */
+    .modal-content {
+        width: 95% !important;
+        max-width: none !important;
+        margin: 1rem;
+    }
+    
+    .form-group input,
+    .form-group select {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        min-height: 48px;
+    }
+    
+    .btn {
+        padding: 1rem 1.5rem !important;
+        font-size: 1rem !important;
+        min-height: 48px;
+    }
+    
+    /* Mobile modal improvements */
+    .modal {
+        padding: 0.5rem;
+    }
+    
+    .modal-header {
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group label {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    /* Large close buttons */
+    .modal-close {
+        padding: 0.8rem;
+        font-size: 1.2rem;
+        min-height: 44px;
+        min-width: 44px;
     }
     
     .floating-panel {
@@ -712,6 +852,34 @@ body {
 @keyframes highlight {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
+}
+
+.mobile-highlight {
+    animation: mobileHighlight 2s ease-in-out;
+    border: 3px solid #4f46e5 !important;
+}
+
+@keyframes mobileHighlight {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    25% { 
+        transform: scale(1.05);
+        box-shadow: 0 12px 35px rgba(79, 70, 229, 0.3);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+    }
+    75% { 
+        transform: scale(1.01);
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+    }
+    100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
 }
 
 /* Loading Spinner */
@@ -759,4 +927,8 @@ body {
 
 .toast.warning {
     background: #f59e0b;
+}
+
+.toast.info {
+    background: #3b82f6;
 } 
