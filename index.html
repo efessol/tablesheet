@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İnteraktif Masa Planlayıcı</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header with Tools -->
+        <header class="header">
+            <div class="title">
+                <h1><i class="fas fa-utensils"></i> Masa Düzenleyici</h1>
+                <div class="header-right">
+                    <div class="compact-stats">
+                        <span class="stat-compact">Masa: <strong id="totalTables">0</strong></span>
+                        <span class="stat-compact">Kapasite: <strong id="totalCapacity">0</strong></span>
+                        <span class="stat-compact">Bölge: <strong id="totalZones">0</strong></span>
+                        <span class="stat-compact">Zoom: <strong id="zoomLevel">100%</strong></span>
+                    </div>
+                    <div class="mode-toggle">
+                        <button id="editMode" class="mode-btn active">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </button>
+                        <button id="viewMode" class="mode-btn">
+                            <i class="fas fa-eye"></i> Görüntüle
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Toolbar -->
+            <div class="toolbar" id="toolbar">
+                <div class="tool-group">
+                    <h4>Masa Ekle</h4>
+                    <button class="tool-btn" data-shape="round" data-action="add-table">
+                        <i class="fas fa-circle"></i> Yuvarlak
+                    </button>
+                    <button class="tool-btn" data-shape="rectangle" data-action="add-table">
+                        <i class="fas fa-square"></i> Dikdörtgen
+                    </button>
+                    <button class="tool-btn" data-shape="square" data-action="add-table">
+                        <i class="far fa-square"></i> Kare
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <h4>Bölge Ekle</h4>
+                    <button class="tool-btn" data-action="add-zone">
+                        <i class="fas fa-vector-square"></i> Bölge
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <h4>Araçlar</h4>
+                    <button class="tool-btn" data-action="delete" id="deleteBtn">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                    <button class="tool-btn" data-action="export-jpg">
+                        <i class="fas fa-image"></i> JPG İndir
+                    </button>
+                    <button class="tool-btn" data-action="save-json">
+                        <i class="fas fa-save"></i> JSON Kaydet
+                    </button>
+                    <button class="tool-btn" data-action="load">
+                        <i class="fas fa-folder-open"></i> Yükle
+                    </button>
+                    <button class="tool-btn" data-action="arrange">
+                        <i class="fas fa-magic"></i> Otomatik Düzenle
+                    </button>
+                    <button class="tool-btn" data-action="reset-layout">
+                        <i class="fas fa-refresh"></i> Layout Sıfırla
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <h4>Görünüm</h4>
+                    <button class="tool-btn" data-action="zoom-in">
+                        <i class="fas fa-search-plus"></i> Yakınlaştır
+                    </button>
+                    <button class="tool-btn" data-action="zoom-out">
+                        <i class="fas fa-search-minus"></i> Uzaklaştır
+                    </button>
+                    <button class="tool-btn" data-action="zoom-reset">
+                        <i class="fas fa-expand"></i> Sıfırla
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Canvas Container -->
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="tableCanvas" width="3000" height="2000"></canvas>
+                
+
+
+                <!-- Selected Item Info (shows only when item is selected) -->
+                <div class="selected-info" id="selectedInfo" style="display: none;">
+                    <div class="info-header">
+                        <span id="selectedName">-</span>
+                        <button class="btn-icon" onclick="window.tableEditor.deselectItem()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-row">
+                            <span class="info-label">Tip:</span>
+                            <span id="selectedType">-</span>
+                        </div>
+                        <div class="info-row" id="capacityRow">
+                            <span class="info-label">Kapasite:</span>
+                            <span id="selectedCapacity">-</span>
+                        </div>
+                        <div class="info-row" id="statusRow">
+                            <span class="info-label">Durum:</span>
+                            <span id="selectedStatus">-</span>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-small" onclick="window.tableEditor.openPropertiesModal()">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </button>
+                            <button class="btn-small btn-danger" onclick="window.tableEditor.deleteSelected()">
+                                <i class="fas fa-trash"></i> Sil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="menu-item" data-action="edit">
+            <i class="fas fa-edit"></i> Düzenle
+        </div>
+        <div class="menu-item" data-action="copy">
+            <i class="fas fa-copy"></i> Kopyala
+        </div>
+        <div class="menu-item" data-action="delete">
+            <i class="fas fa-trash"></i> Sil
+        </div>
+        <div class="menu-item" data-action="color">
+            <i class="fas fa-palette"></i> Renk Değiştir
+        </div>
+    </div>
+
+    <!-- Modal for Table/Zone Properties -->
+    <div class="modal" id="propertiesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Masa Özellikleri</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="itemName">İsim:</label>
+                    <input type="text" id="itemName" placeholder="Masa adı">
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemCapacity">Kapasite:</label>
+                    <input type="number" id="itemCapacity" min="1" max="20" value="4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemColor">Renk:</label>
+                    <div class="color-picker">
+                        <input type="color" id="itemColor" value="#4CAF50">
+                        <div class="color-presets">
+                            <div class="color-preset" data-color="#4CAF50" style="background: #4CAF50"></div>
+                            <div class="color-preset" data-color="#F44336" style="background: #F44336"></div>
+                            <div class="color-preset" data-color="#2196F3" style="background: #2196F3"></div>
+                            <div class="color-preset" data-color="#FF9800" style="background: #FF9800"></div>
+                            <div class="color-preset" data-color="#9C27B0" style="background: #9C27B0"></div>
+                            <div class="color-preset" data-color="#607D8B" style="background: #607D8B"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="statusGroup">
+                    <label for="itemStatus">Durum:</label>
+                    <select id="itemStatus">
+                        <option value="Empty">Boş</option>
+                        <option value="Occupied">Dolu</option>
+                        <option value="Reserved">Rezerve</option>
+                        <option value="Cleaning">Temizlik</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveItemProperties()">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> İptal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Picker Modal -->
+    <div class="modal" id="colorModal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3>Renk Seç</h3>
+                <button class="modal-close" onclick="closeColorModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="color-grid">
+                    <div class="color-option" data-color="#4CAF50" style="background: #4CAF50"></div>
+                    <div class="color-option" data-color="#F44336" style="background: #F44336"></div>
+                    <div class="color-option" data-color="#2196F3" style="background: #2196F3"></div>
+                    <div class="color-option" data-color="#FF9800" style="background: #FF9800"></div>
+                    <div class="color-option" data-color="#9C27B0" style="background: #9C27B0"></div>
+                    <div class="color-option" data-color="#607D8B" style="background: #607D8B"></div>
+                    <div class="color-option" data-color="#795548" style="background: #795548"></div>
+                    <div class="color-option" data-color="#FFC107" style="background: #FFC107"></div>
+                    <div class="color-option" data-color="#E91E63" style="background: #E91E63"></div>
+                    <div class="color-option" data-color="#00BCD4" style="background: #00BCD4"></div>
+                    <div class="color-option" data-color="#8BC34A" style="background: #8BC34A"></div>
+                    <div class="color-option" data-color="#FF5722" style="background: #FF5722"></div>
+                </div>
+                <input type="color" id="customColor" style="width: 100%; margin-top: 10px;">
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

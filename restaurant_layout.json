@@ -1,0 +1,401 @@
+{
+  "tables": [
+    {
+      "id": 1,
+      "name": "Masa 9",
+      "x": 122,
+      "y": 354,
+      "shape": "round",
+      "status": "Empty",
+      "capacity": 5,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 2,
+      "name": "Masa 10",
+      "x": 126,
+      "y": 216,
+      "shape": "round",
+      "status": "Occupied",
+      "capacity": 5,
+      "color": "#f44336",
+      "type": "table"
+    },
+    {
+      "id": 3,
+      "name": "Masa 8",
+      "x": 120,
+      "y": 486,
+      "shape": "round",
+      "status": "Empty",
+      "capacity": 5,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 4,
+      "name": "Masa 11",
+      "x": 322,
+      "y": 68,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 5,
+      "name": "Masa 12",
+      "x": 492,
+      "y": 66,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 6,
+      "name": "Masa 13",
+      "x": 668,
+      "y": 66,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 8,
+      "name": "Masa 14",
+      "x": 954,
+      "y": 66,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 9,
+      "name": "Masa 15",
+      "x": 1110,
+      "y": 66,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 10,
+      "name": "Masa 16",
+      "x": 1256,
+      "y": 68,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 12,
+      "name": "Masa 3",
+      "x": 854,
+      "y": 692,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 14,
+      "name": "Masa 1",
+      "x": 1154,
+      "y": 696,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 15,
+      "name": "Masa 18",
+      "x": 1534,
+      "y": 68,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 16,
+      "name": "Masa 6",
+      "x": 420,
+      "y": 694,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 17,
+      "name": "Masa 5",
+      "x": 570,
+      "y": 692,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 18,
+      "name": "Masa 4",
+      "x": 718,
+      "y": 692,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 19,
+      "name": "Masa 2",
+      "x": 996,
+      "y": 696,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 20,
+      "name": "Masa 7",
+      "x": 282,
+      "y": 696,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 21,
+      "name": "Masa 17",
+      "x": 1408,
+      "y": 68,
+      "shape": "rectangle",
+      "status": "Empty",
+      "capacity": 4,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 22,
+      "name": "Masa 19",
+      "x": 1706,
+      "y": 68,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 23,
+      "name": "Masa 20",
+      "x": 1840,
+      "y": 66,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 24,
+      "name": "Masa 21",
+      "x": 1978,
+      "y": 68,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 25,
+      "name": "Masa 22",
+      "x": 1672,
+      "y": 350,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 26,
+      "name": "Masa 23",
+      "x": 1546,
+      "y": 352,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 27,
+      "name": "Masa 24",
+      "x": 1418,
+      "y": 356,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 28,
+      "name": "Masa 25",
+      "x": 1274,
+      "y": 352,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 29,
+      "name": "Masa 26",
+      "x": 1018,
+      "y": 282,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 30,
+      "name": "Masa 27",
+      "x": 854,
+      "y": 280,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 31,
+      "name": "Masa 28",
+      "x": 594,
+      "y": 276,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 32,
+      "name": "Masa 29",
+      "x": 378,
+      "y": 276,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 33,
+      "name": "Masa 30",
+      "x": 374,
+      "y": 411,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 34,
+      "name": "Masa 31",
+      "x": 594,
+      "y": 416,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 35,
+      "name": "Masa 32",
+      "x": 854,
+      "y": 426,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 36,
+      "name": "Masa 33",
+      "x": 1022,
+      "y": 426,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#4caf50",
+      "type": "table"
+    },
+    {
+      "id": 37,
+      "name": "Orta Servant",
+      "x": 725,
+      "y": 351,
+      "shape": "round",
+      "status": "Empty",
+      "capacity": 5,
+      "color": "#607d8b",
+      "type": "table"
+    },
+    {
+      "id": 38,
+      "name": "Ağaç",
+      "x": 1146,
+      "y": 351,
+      "shape": "square",
+      "status": "Empty",
+      "capacity": 2,
+      "color": "#607d8b",
+      "type": "table"
+    }
+  ],
+  "zones": [
+    {
+      "id": 39,
+      "name": "Lounge",
+      "x": 56,
+      "y": 144,
+      "width": 128,
+      "height": 390,
+      "color": "#e3f2fd",
+      "type": "zone"
+    }
+  ]
+} 
